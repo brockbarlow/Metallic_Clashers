@@ -8,7 +8,7 @@ namespace Combat
 
     public class TargetingEnemy : MonoBehaviour
     {
-        [SerializeField,]
+        [SerializeField]
         private GameObject m_MarkerPrefab;
 
         [SerializeField]
@@ -55,7 +55,7 @@ namespace Combat
 
             m_Marker.SetParent(enemyMono.transform.root, false);
             m_CurrentPosition = currentEnemyBounds.center +
-                new Vector3(0, currentEnemyBounds.extents.y + .5f, 0) + m_MinPositionOffset;
+                new Vector3(0, currentEnemyBounds.extents.y, 0) + m_MinPositionOffset;
             m_Marker.position = m_CurrentPosition;
         }
 
