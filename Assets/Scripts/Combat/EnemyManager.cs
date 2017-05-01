@@ -122,23 +122,23 @@
 
             switch (CombatManager.self.combatMode)
             {
-                case CombatManager.CombatMode.Attack:
-                    var dam = playerData.attack.totalValue *
-                              (1 + (matchInfo.gems.Count - 3) * .25f);
+            case CombatManager.CombatMode.Attack:
+                var dam = playerData.attack.totalValue *
+                          (1 + (matchInfo.gems.Count - 3) * .25f);
 
-                    currentEnemy.enemy.TakeDamage(dam, matchInfo.type);
+                currentEnemy.enemy.TakeDamage(dam, matchInfo.type);
 
-                    if (currentEnemy.enemy.health.totalValue <= 0f)
-                    {
-                        m_Enemies.Remove(currentEnemy);
-                        currentEnemy = m_Enemies.FirstOrDefault();
-                    }
-                    break;
+                if (currentEnemy.enemy.health.totalValue <= 0f)
+                {
+                    m_Enemies.Remove(currentEnemy);
+                    currentEnemy = m_Enemies.FirstOrDefault();
+                }
+                break;
 
-                case CombatManager.CombatMode.Defense:
-                    GameManager.self.playerData.defense.modifier += matchInfo.gems.Count
-                    * (playerData.defense.value * .8f);
-                    break;
+            case CombatManager.CombatMode.Defense:
+                GameManager.self.playerData.defense.modifier += matchInfo.gems.Count
+                * (playerData.defense.value * .8f);
+                break;
             }
         }
 
@@ -160,13 +160,15 @@
         {
             // Else shoot ray from touch
             var ray = Camera.main.ScreenPointToRay(touchInfo.position);
-            RaycastHit raycastHit;
 
-            if (!Physics.Raycast(ray.origin, ray.direction, out raycastHit))   // Did the ray hit something
+            var raycastHits = Physics.RaycastAll(ray.origin, ray.direction);
+            if (!raycastHits.Any())
                 return;
 
-            var hitEnemyMono = raycastHit.transform.root.GetComponentInChildren<EnemyMono>();
-
+            var hitEnemyMono =
+                raycastHits.
+                    Select(hit => hit.transform.root.GetComponentInChildren<EnemyMono>()).
+                        FirstOrDefault(enemyMono => enemyMono != null);
             if (hitEnemyMono == null)
                 return;
 

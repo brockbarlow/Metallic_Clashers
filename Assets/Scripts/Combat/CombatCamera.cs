@@ -6,7 +6,7 @@
     using System.Linq;
 
     using UnityEngine;
-    
+
     [Serializable]
     public class CombatCamera : MonoBehaviour
     {
@@ -52,7 +52,8 @@
                 m_AnimationEnumerator.MoveNext();
 
             if (m_ScreenShakeEnumerator != null)
-                m_ScreenShakeEnumerator.MoveNext();
+                if (!m_ScreenShakeEnumerator.MoveNext())
+                    m_ScreenShakeEnumerator = null;
         }
 
         private void OnPlayerTakeDamage()
@@ -83,7 +84,8 @@
                 //TODO: Do something based on TargetType
                 var currentEnumerator = currentAnimation.Animate(transform, null);
 
-                while (currentEnumerator.MoveNext()) { yield return null; }
+                while (currentEnumerator.MoveNext())
+                    yield return null;
             }
 
             m_AnimationEnumerator = null;
@@ -97,9 +99,9 @@
                 var xOffset = transform.right * RandomManager.self.Range(RANDOM_KEY, -0.2f, 0.2f);
                 var yOffset = transform.up * RandomManager.self.Range(RANDOM_KEY, -0.2f, 0.2f);
 
-                transform.position =
-                    (transform.position + xOffset + yOffset) *
-                    m_ScreenShakeCurve.Evaluate(deltaTime / m_ScreenShakeTime);
+                transform.position +=
+                    (xOffset + yOffset)
+                        * m_ScreenShakeCurve.Evaluate(deltaTime / m_ScreenShakeTime);
 
                 deltaTime += Time.deltaTime;
 
